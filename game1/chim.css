@@ -1,0 +1,63 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+}
+
+.background {
+    height: 100vh;
+    width: 100vw;
+    background-image: url('game/background_and_road.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.bird {
+    height: 50px;
+    max-width: 100%;
+    position: fixed;
+    top: 40vh;
+    left: 30vw;
+}
+
+.pipe_sprite {
+    position: fixed;
+    top: 40vh;
+    left: 100vw;
+    height: 65vh;
+    width: 12vw;
+    background-image: url('game/pipes.png');
+}
+
+.message {
+    position: fixed;
+    z-index: 10;
+    height: 10vh;
+    font-size: 10vh;
+    font-weight: 100;
+    color: white;
+    top: 40vh;
+    left: 20vw;
+    text-align: center;
+    background-color: rgb(0, 187, 255);
+}
+
+.score {
+    position: fixed;
+    z-index: 10;
+    height: 10vh;
+    font-size: 10vh;
+    font-weight: 100;
+    color: rgb(255, 255, 255);
+    top: 0;
+    left: 0;
+}
+
+.score_val {
+    color: rgb(255, 255, 255);
+}
