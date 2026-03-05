@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Y8 Angry Bird Hunter</title>
+    <link rel="stylesheet" href="banchim.css">
+</head>
+
+<body>
+
+    <div id="game-container">
+        <div id="start-screen" class="overlay">
+            <h1 class="pulse">NHẤN ENTER ĐỂ CHƠI</h1>
+            <p>Sử dụng chuột để bắn chim</p>
+        </div>
+
+        <div class="ui">
+            <div class="stat">Điểm: <span id="score">0</span></div>
+            <div class="stat">Thời gian: <span id="timer">30</span>s</div>
+        </div>
+
+        <div id="game-over" class="overlay">
+            <h2>HẾT GIỜ!</h2>
+            <p id="final-score">Tổng điểm: 0</p>
+            <button id="restart-btn">Chơi lại (Enter)</button>
+        </div>
+    </div>
+
+    <script src="banchim.js"></script>
+</body>
+
+</html>

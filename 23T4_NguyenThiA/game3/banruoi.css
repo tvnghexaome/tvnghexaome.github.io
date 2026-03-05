@@ -1,0 +1,17 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+ body {
+    margin: 0;
+    background: black;
+    color:rgb(5, 5, 5);
+    text-align: center;
+    font-family: Arial;
+} 
+canvas {
+    background:black;
+    display: block;
+    margin: auto;
+    border: 2px solid white;
+}
