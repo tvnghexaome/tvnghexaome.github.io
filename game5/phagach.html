@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Phá Gạch Version 1 - Level Up</title>
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: url(images/background.png); }
+        canvas { border: 2px solid #fff; background-color: rgba(0, 0, 0, 0.637); }
+        #startScreen { position: absolute; background: rgba(0, 0, 0, 0.287); color: #fff; font-family: Arial, sans-serif; text-align: center; padding: 20px; border: 2px solid #fff; border-radius: 10px; }
+        #startScreen h1 { font-size: 32px; margin-bottom: 10px; }
+        #startScreen button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div id="startScreen">
+        <h1>Game Phá Gạch</h1>
+        <p>Click để chơi (Level sẽ tăng khi phá hết gạch)</p>
+        <button onclick="startGame()">Bắt đầu chơi</button>
+    </div>
+    <canvas id="gameCanvas" width="640" height="480"></canvas>
+
+    <script src="game.js"></script>
+</body>
+</html>
