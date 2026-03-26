@@ -26,6 +26,8 @@ const starImg = new Image();
 starImg.src = "images/star.png";
 
 // ================= GAME STATE =================
+let bulletsCount, maxBullets; // Số đạn hiện có và tối đa
+let fuel, maxFuel;           // Nhiên liệu hiện có và tối đa (thay cho biến time cũ)
 let score, level, nextLevelScore, time, gameOver;
 let bullets, obstacles, fuels, stars, boss;
 let shootCooldown, birdFrame, birdDelay;
@@ -56,6 +58,11 @@ function resetGame() {
   nextLevelScore = 50;
   time = 60;
   gameOver = false;
+
+  maxBullets = 30;
+    bulletsCount = maxBullets;
+    maxFuel = 100;
+    fuel = maxFuel;
 
   bullets = [];
   obstacles = [];
@@ -89,13 +96,14 @@ function spawnObstacle() {
 }
 
 function spawnFuel() {
-  fuels.push({
-    x: canvas.width,
-    y: Math.random() * (canvas.height - 40),
-    width: 40,
-    height: 40
-  });
-}
+    fuels.push({
+      x: canvas.width,
+      y: Math.random() * (canvas.height - 40),
+      width: 40,
+      height: 40,
+      speed: 3 + Math.random() * 2 // Tốc độ ngẫu nhiên từ 3 đến 5
+    });
+  }
 
 function spawnStar() {
   stars.push({
@@ -118,6 +126,9 @@ function isColliding(a, b) {
 
 // ================= LEVEL =================
 function checkLevelUp() {
+
+    
+
   if (score >= nextLevelScore) {
     level++;
     nextLevelScore += 60 + level * 20;
@@ -196,17 +207,18 @@ function gameLoop() {
   if (keys["ArrowLeft"] && plane.x > 0) plane.x -= plane.speed;
   if (keys["ArrowRight"] && plane.x < canvas.width - plane.width) plane.x += plane.speed;
 
-  // SHOOT
-  if (keys[" "] && shootCooldown <= 0) {
+  // SHOOT (Sửa lại điều kiện có đạn)
+if (keys[" "] && shootCooldown <= 0 && bulletsCount > 0) {
     bullets.push({
-      x: plane.x + plane.width,
-      y: plane.y + plane.height/2 - 3,
-      width: 15,
-      height: 6,
-      speed: 8
+        x: plane.x + plane.width,
+        y: plane.y + plane.height/2 - 3,
+        width: 15,
+        height: 6,
+        speed: 8
     });
+    bulletsCount--; // Giảm đạn sau mỗi lần bắn
     shootCooldown = 12;
-  }
+}
   shootCooldown--;
 
   for (let i = bullets.length - 1; i >= 0; i--) {
@@ -250,13 +262,14 @@ function gameLoop() {
   // FUEL (đã sửa sạch bug)
   for (let i = fuels.length - 1; i >= 0; i--) {
     let f = fuels[i];
-    f.x -= 2;
+    // Trong gameLoop, phần xử lý FUEL
+f.x -= f.speed;
     ctx.drawImage(fuelImg, f.x, f.y, f.width, f.height);
 
     if (isColliding(plane, f)) {
-      time += 10;
-      fuels.splice(i, 1);
-      continue;
+        fuel = Math.min(maxFuel, fuel + 50); // Hồi 20% xăng, không quá 100%
+        fuels.splice(i, 1);
+        continue;
     }
 
     if (f.x + f.width < 0) fuels.splice(i, 1);
@@ -265,13 +278,14 @@ function gameLoop() {
   // STAR
   for (let i = stars.length - 1; i >= 0; i--) {
     let s = stars[i];
-    s.x -= 2;
+    s.x -= 4;
     ctx.drawImage(starImg, s.x, s.y, s.width, s.height);
 
     if (isColliding(plane, s)) {
-      score += 10;
-      stars.splice(i, 1);
-      continue;
+        score += 10;
+        bulletsCount = Math.min(maxBullets, bulletsCount + 5); // Hồi 5 viên đạn
+        stars.splice(i, 1);
+        continue;
     }
 
     if (s.x + s.width < 0) stars.splice(i, 1);
@@ -281,14 +295,26 @@ function gameLoop() {
 
   ctx.drawImage(planeImg, plane.x, plane.y, plane.width, plane.height);
 
-  time -= 1/60;
+  // Giảm nhiên liệu theo thời gian
+fuel -= 0.05; 
+if (fuel <= 0) endGame();
 
-  ctx.fillStyle = "black";
-  ctx.font = "20px Arial";
-  ctx.fillText("Score: " + score, 20, 30);
-  ctx.fillText("Level: " + level, 150, 30);
-  ctx.fillText("HP: " + plane.hp, 250, 30);
-  ctx.fillText("Time: " + Math.floor(time), 320, 30);
+// VẼ UI
+ctx.fillStyle = "black";
+ctx.font = "20px Arial";
+ctx.fillText(`Score: ${score}`, 20, 30);
+ctx.fillText(`Level: ${level}`, 150, 30);
+ctx.fillText(`Bullets: ${bulletsCount}/${maxBullets}`, 250, 30);
+
+// Vẽ thanh xăng (Fuel Bar)
+ctx.fillText("Fuel: ", 420, 30);
+ctx.strokeStyle = "black";
+ctx.strokeRect(480, 12, 100, 20); // Khung thanh xăng
+ctx.fillStyle = fuel > 30 ? "green" : "red"; // Đổi màu khi sắp hết
+ctx.fillRect(480, 12, fuel, 20); // Phần xăng hiện tại
+
+ctx.fillStyle = "black";
+ctx.fillText("HP: " + plane.hp, 600, 30);
 
   if (time <= 0) endGame();
 
