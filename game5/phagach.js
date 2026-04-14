@@ -3,7 +3,7 @@ const ctx = canvas.getContext('2d');
 
 // --- Cấu hình Thanh chèo (Đã chỉnh dài hơn: 180) ---
 const paddle = {
-    width: 180, 
+    width: 180,
     height: 10,
     x: (canvas.width - 180) / 2,
     speed: 8
@@ -132,12 +132,13 @@ function collisionDetection() {
                         if (score === brickRowCount * brickColumnCount) {
                             level++;
                             alert("CHÚC MỪNG! BẠN LÊN CẤP " + level);
+                            lives = 3; // Reset máu về như ban đầu
                             score = 0;
                             // Reset bóng và tăng tốc độ dựa trên level
                             balls = [{
                                 x: canvas.width / 2,
                                 y: canvas.height - 30,
-                                dx: 3.5 + (level * 0.5), 
+                                dx: 3.5 + (level * 0.5),
                                 dy: -(3.5 + (level * 0.5))
                             }];
                             paddle.x = (canvas.width - paddle.width) / 2;
@@ -184,7 +185,7 @@ function drawHighScore() {
 function drawPowerUpMessage() {
     if (powerUpTimer > 0) {
         ctx.font = "20px Arial"; ctx.fillStyle = "yellow";
-ctx.fillText(powerUpMessage, canvas.width / 2 - 80, canvas.height / 2);
+        ctx.fillText(powerUpMessage, canvas.width / 2 - 80, canvas.height / 2);
         powerUpTimer--;
     }
 }
