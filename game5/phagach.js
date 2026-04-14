@@ -66,9 +66,26 @@ function initBricks() {
         for (let r = 0; r < brickRowCount; r++) {
             const x = c * (brickWidth + brickPadding) + brickOffsetLeft;
             const y = r * (brickHeight + brickPadding) + brickOffsetTop;
-            bricks[c][r] = { x, y, status: 1, color: getRandomColor() };
+
+            bricks[c][r] = {
+                x,
+                y,
+                status: 1,
+                color: getRandomColor() // ✅ dùng lại cái này
+            };
         }
     }
+}
+
+function isLevelCleared() {
+    for (let c = 0; c < brickColumnCount; c++) {
+        for (let r = 0; r < brickRowCount; r++) {
+            if (bricks[c][r].status === 1) {
+                return false; // còn gạch
+            }
+        }
+    }
+    return true; // hết gạch
 }
 
 function getRandomColor() {
@@ -125,24 +142,19 @@ function collisionDetection() {
                     if (ball.x > b.x && ball.x < b.x + brickWidth && ball.y > b.y && ball.y < b.y + brickHeight) {
                         ball.dy = -ball.dy;
                         b.status = 0;
-                        score++;
-                        if (Math.random() < 0.1 && !powerUp.active) spawnPowerUp(b.x + brickWidth / 2, b.y + brickHeight / 2);
-
-                        // --- Logic Lên Cấp Khi Phá Hết Gạch ---
-                        if (score === brickRowCount * brickColumnCount) {
-                            level++;
-                            alert("CHÚC MỪNG! BẠN LÊN CẤP " + level);
-                            lives = 3; // Reset máu về như ban đầu
-                            score = 0;
-                            // Reset bóng và tăng tốc độ dựa trên level
-                            balls = [{
-                                x: canvas.width / 2,
-                                y: canvas.height - 30,
-                                dx: 3.5 + (level * 0.5),
-                                dy: -(3.5 + (level * 0.5))
-                            }];
-                            paddle.x = (canvas.width - paddle.width) / 2;
-                            initBricks();
+                    
+                        // 🎯 Điểm theo hàng (hàng trên điểm cao hơn)
+                        score += (brickRowCount - r);
+                    
+                        // 🎯 Spawn 2 bóng từ hàng 2 trở lên
+                        if (r >= 1 && balls.length < 5) {
+                            spawnExtraBalls(ball);
+                        }
+                    
+                        // 🎯 Kiểm tra thắng (phá hết gạch)
+                        if (isLevelCleared()) {
+                            alert("BẠN THẮNG!");
+                            document.location.reload();
                         }
                     }
                 });
@@ -164,6 +176,18 @@ function applyPowerUp() {
         balls.push(newBall); powerUpMessage = "Nhân bản bóng!";
     }
     powerUpTimer = 120;
+}
+
+function spawnExtraBalls(originalBall) {
+    const ball1 = { ...originalBall };
+    const ball2 = { ...originalBall };
+
+    // Tạo hướng khác nhau để không chồng nhau
+    ball1.dx = Math.abs(originalBall.dx);
+    ball2.dx = -Math.abs(originalBall.dx);
+
+    balls.push(ball1);
+    balls.push(ball2);
 }
 
 function drawScore() {
@@ -207,19 +231,19 @@ function draw() {
         if (ball.x + ball.dx > canvas.width - ballRadius || ball.x + ball.dx < ballRadius) ball.dx = -ball.dx;
         if (ball.y + ball.dy < ballRadius) ball.dy = -ball.dy;
         else if (ball.y + ball.dy > canvas.height - ballRadius) {
-            if (ball.x > paddle.x && ball.x < paddle.x + paddle.width) ball.dy = -ball.dy;
+            if (ball.x > paddle.x && ball.x < paddle.x + paddle.width) {
+                let hitPoint = ball.x - (paddle.x + paddle.width / 2);
+                ball.dx = hitPoint * 0.1; // điều khiển hướng
+                ball.dy = -ball.dy;
+            }
             else {
                 if (balls.length > 1) balls.splice(index, 1);
                 else {
                     lives--;
-                    if (!lives) {
-                        if (score > highScore) localStorage.setItem('highScore', score);
-                        alert("GAME OVER"); document.location.reload();
-                    } else {
-                        ball.x = canvas.width / 2; ball.y = canvas.height - 30;
-                        ball.dx = 3.5 + (level * 0.5); ball.dy = -(3.5 + (level * 0.5));
-                        paddle.x = (canvas.width - paddle.width) / 2;
-                    }
+if (!lives) {
+    alert("GAME OVER");
+    document.location.reload();
+}
                 }
             }
         }
